@@ -1,3 +1,3 @@
 # RGBD_processing
 
-A description of this package.
+Various function to help read incoming data from iphone front TrueDepth Sensor.
