@@ -7,7 +7,7 @@ public class RGBD {
     private var textureCache: CVMetalTextureCache?
     private var metalDevice: MTLDevice!
     private var generator:AVAssetImageGenerator!
-    init() {
+    public init() {
         self.metalDevice = MTLCreateSystemDefaultDevice()
         var metalTextureCache: CVMetalTextureCache?
         if CVMetalTextureCacheCreate(kCFAllocatorDefault, nil, metalDevice, nil, &metalTextureCache) != kCVReturnSuccess {
@@ -240,7 +240,7 @@ public class RGBD {
     /**
         convert depth CVPixelBuffer to flat array.
      **/
-    func convertDepthDataToArrayFloat(depthDataMap: CVPixelBuffer) -> [[Float32]]{
+    func convertDepthDataToFloatArray(depthDataMap: CVPixelBuffer) -> [[Float32]]{
         let width: Int = CVPixelBufferGetWidth(depthDataMap)
         let height: Int = CVPixelBufferGetHeight(depthDataMap)
         var convertedDepthMap: [[Float32]] = Array(
@@ -259,5 +259,24 @@ public class RGBD {
         CVPixelBufferUnlockBaseAddress(depthDataMap, CVPixelBufferLockFlags(rawValue: 2))
         
         return convertedDepthMap
+    }
+    func convertFloatArrayToDepthData(depthData: [[Float32]], width: Int, height: Int) -> CVPixelBuffer?{
+        var depthDataArray = depthData
+        var depthBuffer: CVPixelBuffer? = nil
+        let options: NSDictionary = [:]
+
+        CVPixelBufferCreateWithBytes(
+            kCFAllocatorDefault,
+            width,
+            height,
+            kCVPixelFormatType_DepthFloat32,
+            &depthDataArray,
+            MemoryLayout<Float32>.stride*640,
+            nil,
+            nil,
+            options,
+            &depthBuffer
+        )
+        return depthBuffer
     }
 }
