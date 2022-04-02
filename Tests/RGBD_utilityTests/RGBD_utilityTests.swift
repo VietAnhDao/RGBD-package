@@ -1,5 +1,5 @@
 import XCTest
-@testable import RGBD_processing
+@testable import RGBD_utility
 
 final class RGBD_processingTests: XCTestCase {
     func testExample() throws {

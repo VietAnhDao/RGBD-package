@@ -3,7 +3,7 @@ import AVFoundation
 import CoreVideo
 import PhotosUI
 @available(iOS 11.0, *)
-public class RGBD {
+public class RGBD_ultility {
     private var textureCache: CVMetalTextureCache?
     private var metalDevice: MTLDevice!
     private var generator:AVAssetImageGenerator!
