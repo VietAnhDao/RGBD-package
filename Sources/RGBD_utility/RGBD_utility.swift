@@ -2,6 +2,16 @@ import MetalKit
 import AVFoundation
 import CoreVideo
 import PhotosUI
+import Foundation
+
+extension FileManager {
+    func urls(for directory: FileManager.SearchPathDirectory, skipsHiddenFiles: Bool = true ) -> [URL]? {
+        let documentsURL = urls(for: directory, in: .userDomainMask)[0]
+        let fileURLs = try? contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil, options: skipsHiddenFiles ? .skipsHiddenFiles : [] )
+        return fileURLs
+    }
+}
+
 @available(iOS 11.0, *)
 public class RGBD_ultility {
     private var textureCache: CVMetalTextureCache?
@@ -21,7 +31,7 @@ public class RGBD_ultility {
         function to load CIImage as different type.
      **/
     
-    func pixelBufferFromCGImage(cgImage: CGImage, format: OSType) -> CVPixelBuffer {
+    public func pixelBufferFromCGImage(cgImage: CGImage, format: OSType) -> CVPixelBuffer {
         var pxbuffer: CVPixelBuffer? = nil
         let options: NSDictionary = [:]
 
@@ -46,7 +56,7 @@ public class RGBD_ultility {
         )
         return pxbuffer!;
     }
-    func PixelBufferToMTLTexture(pixelBuffer:CVPixelBuffer, format: MTLPixelFormat) -> MTLTexture?
+    public func PixelBufferToMTLTexture(pixelBuffer:CVPixelBuffer, format: MTLPixelFormat) -> MTLTexture?
     {
         let width = CVPixelBufferGetWidth(pixelBuffer)
         let height = CVPixelBufferGetHeight(pixelBuffer)
@@ -73,7 +83,7 @@ public class RGBD_ultility {
     /**
         parse data as jpeg/png representation using cgImage.
      **/
-    func savePhotoToLibrary(data: Data){
+    public func savePhotoToLibrary(data: Data){
         PHPhotoLibrary.shared().performChanges({
             let options = PHAssetResourceCreationOptions()
             let creationRequest = PHAssetCreationRequest.forAsset()
@@ -86,7 +96,7 @@ public class RGBD_ultility {
                 }
             })
     }
-    func loadPhotoFromLocal(name: String, fileExtension: String)->UIImage?{
+    public func loadPhotoFromLocal(name: String, fileExtension: String)->UIImage?{
         guard let filePath = Bundle.main.path(forResource: name, ofType: fileExtension) else {print("invalid file path"); return nil}
         guard let image = UIImage(contentsOfFile: filePath) else {print("unable to load images");return nil}
         return image
@@ -95,7 +105,7 @@ public class RGBD_ultility {
     /**
         function to save an array of UIImage to iPhone photo library.
      **/
-    func saveVideoToLibrary(videoURL: URL) {
+    public func saveVideoToLibrary(videoURL: URL) {
         PHPhotoLibrary.shared().performChanges({
             PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: videoURL)
         }) { saved, error in
@@ -109,7 +119,7 @@ public class RGBD_ultility {
             }
         }
     }
-    func buildVideoFromImageArray(framesArray:[UIImage]) {
+    public func buildVideoFromImageArray(framesArray:[UIImage]) {
         var images = framesArray
         let outputSize = CGSize(width:images[0].size.width, height: images[0].size.height)
         let fileManager = FileManager.default
@@ -217,7 +227,7 @@ public class RGBD_ultility {
             })
         }
     }
-    func loadVideoFromLocal(filename: String, fileExtension: String)->[UIImage]? {
+    public func loadVideoFromLocal(filename: String, fileExtension: String)->[UIImage]? {
         guard let url = Bundle.main.url(forResource: filename, withExtension: fileExtension) else{print("unable to load URL"); return nil}
         let asset:AVAsset = AVAsset(url:url)
         let duration:Float64 = CMTimeGetSeconds(asset.duration)
@@ -240,7 +250,7 @@ public class RGBD_ultility {
     /**
         convert depth CVPixelBuffer to flat array.
      **/
-    func convertDepthDataToFloatArray(depthDataMap: CVPixelBuffer) -> [[Float32]]{
+    public func convertDepthDataToFloatArray(depthDataMap: CVPixelBuffer) -> [[Float32]]{
         let width: Int = CVPixelBufferGetWidth(depthDataMap)
         let height: Int = CVPixelBufferGetHeight(depthDataMap)
         var convertedDepthMap: [[Float32]] = Array(
@@ -260,7 +270,7 @@ public class RGBD_ultility {
         
         return convertedDepthMap
     }
-    func convertFloatArrayToDepthData(depthData: [[Float32]], width: Int, height: Int) -> CVPixelBuffer?{
+    public func convertFloatArrayToDepthData(depthData: [[Float32]], width: Int, height: Int) -> CVPixelBuffer?{
         var depthDataArray = depthData
         var depthBuffer: CVPixelBuffer? = nil
         let options: NSDictionary = [:]
